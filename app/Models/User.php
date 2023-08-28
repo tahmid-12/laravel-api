@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Support\Facades\Crypt;
 
 class User extends Authenticatable
 {
@@ -21,7 +22,21 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'retype_password',
+        'address',
+        'phone_number'
     ];
+
+    public static function createUser($data)
+    {     
+        return self::create([
+            'name' => $data['name'],
+            'email' => $data['email'],
+            'password' => Crypt::encryptString($data['password']),
+            'address' => $data['address'],
+            'phone_number' => $data['phone_number']
+        ]);
+    }
 
     /**
      * The attributes that should be hidden for serialization.
