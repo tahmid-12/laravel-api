@@ -8,6 +8,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Support\Facades\Crypt;
+use PHPOpenSourceSaver\JWTAuth\Contracts\JWTSubject;
 
 class User extends Authenticatable
 {
@@ -28,7 +29,7 @@ class User extends Authenticatable
     ];
 
     public static function createUser($data)
-    {     
+    {
         return self::create([
             'name' => $data['name'],
             'email' => $data['email'],
@@ -36,6 +37,19 @@ class User extends Authenticatable
             'address' => $data['address'],
             'phone_number' => $data['phone_number']
         ]);
+    }
+
+    public static function authenticateUser($data){
+
+        $user = self::where('email', $data['email'])->first();
+
+        if (!$user) {
+            return false; // User not found
+        }
+
+        $decryptedPassword = Crypt::decryptString($user->password);
+
+        return $data['password'] === $decryptedPassword;
     }
 
     /**
@@ -56,4 +70,19 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    public function getJWTIdentifier()
+    {
+        return $this->getKey();
+    }
+
+    /**
+     * Return a key value array, containing any custom claims to be added to the JWT.
+     *
+     * @return array
+     */
+    public function getJWTCustomClaims()
+    {
+        return [];
+    }
 }
