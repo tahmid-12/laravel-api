@@ -80,6 +80,7 @@ class UserController extends Controller
         $user = new User;
         $user = $user->authenticateUser($data);
 
+        //Token work in progress
         if ($user) {
             return response()->json([
                 'code' => '201',
