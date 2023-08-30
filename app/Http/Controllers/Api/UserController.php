@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 class UserController extends Controller
 {
@@ -82,13 +83,15 @@ class UserController extends Controller
 
         //Token work in progress
         if ($user) {
+
+            $token = JWTAuth::fromUser($user);
+
             return response()->json([
                 'code' => '201',
-                'message' => "User Authenticated"
+                'message' => 'User Authenticated',
+                'token' => $token
             ], 201);
         }
-
-        // $token = Auth::attempt($credentials);
 
         return response()->json([
             'code' => '401',

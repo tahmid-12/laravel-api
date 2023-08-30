@@ -8,9 +8,9 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Support\Facades\Crypt;
-use PHPOpenSourceSaver\JWTAuth\Contracts\JWTSubject;
+use Tymon\JWTAuth\Contracts\JWTSubject;
 
-class User extends Authenticatable
+class User extends Authenticatable implements JWTSubject
 {
     use HasApiTokens, HasFactory, Notifiable;
 
@@ -39,7 +39,8 @@ class User extends Authenticatable
         ]);
     }
 
-    public static function authenticateUser($data){
+    public static function authenticateUser($data)
+    {
 
         $user = self::where('email', $data['email'])->first();
 
@@ -49,7 +50,12 @@ class User extends Authenticatable
 
         $decryptedPassword = Crypt::decryptString($user->password);
 
-        return $data['password'] === $decryptedPassword;
+        // return $data['password'] === $decryptedPassword;
+        if ($data['password'] === $decryptedPassword) {
+            return $user; // Return the user instance
+        }
+
+        return null;
     }
 
     /**
@@ -70,4 +76,14 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    public function getJWTIdentifier()
+    {
+        return $this->getKey();
+    }
+
+    public function getJWTCustomClaims()
+    {
+        return [];
+    }
 }
