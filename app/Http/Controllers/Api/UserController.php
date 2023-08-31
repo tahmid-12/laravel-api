@@ -89,7 +89,7 @@ class UserController extends Controller
             return response()->json([
                 'code' => '201',
                 'message' => 'User Authenticated',
-                'token' => $token
+                'token' => 'Bearer ' . $token
             ], 201);
         }
 
