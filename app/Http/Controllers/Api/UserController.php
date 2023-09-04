@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use Tymon\JWTAuth\Facades\JWTAuth;
+use Illuminate\Support\Str;
 
 class UserController extends Controller
 {
@@ -44,6 +45,8 @@ class UserController extends Controller
         }
 
         $data = $request->all();
+        // Generate api_token
+        $data['api_token'] = Str::random(60);
         $user = new User;
         $user = $user->createUser($data);
 
@@ -86,10 +89,14 @@ class UserController extends Controller
 
             $token = JWTAuth::fromUser($user);
 
+            // Generate a refresh token
+            $refreshToken = JWTAuth::fromUser($user);
+
             return response()->json([
                 'code' => '201',
                 'message' => 'User Authenticated',
-                'token' => 'Bearer ' . $token
+                'token' => 'Bearer ' . $token,
+                'refresh_token' => $refreshToken,
             ], 201);
         }
 
@@ -105,20 +112,21 @@ class UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function refresh(Request $request)
     {
-        //
+        $token = JWTAuth::refresh($request->input('refresh_token'));
+
+        return response()->json([
+            'token' => $token,
+        ]);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
+    public function protectedResource()
     {
-        //
+        // Access the authenticated user
+        $user = auth()->user();
+
+        // Your code to handle the protected resource
     }
 
     /**
