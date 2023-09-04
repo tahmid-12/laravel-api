@@ -24,6 +24,7 @@ class User extends Authenticatable implements JWTSubject
         'email',
         'password',
         'retype_password',
+        'api_token',
         'address',
         'phone_number'
     ];
@@ -34,6 +35,7 @@ class User extends Authenticatable implements JWTSubject
             'name' => $data['name'],
             'email' => $data['email'],
             'password' => Crypt::encryptString($data['password']),
+            'api_token' => $data['api_token'],
             'address' => $data['address'],
             'phone_number' => $data['phone_number']
         ]);
@@ -50,7 +52,6 @@ class User extends Authenticatable implements JWTSubject
 
         $decryptedPassword = Crypt::decryptString($user->password);
 
-        // return $data['password'] === $decryptedPassword;
         if ($data['password'] === $decryptedPassword) {
             return $user; // Return the user instance
         }
