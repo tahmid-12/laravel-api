@@ -121,15 +121,12 @@ class UserController extends Controller
         ]);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
+    public function protectedResource()
     {
-        //
+        // Access the authenticated user
+        $user = auth()->user();
+
+        // Your code to handle the protected resource
     }
 
     /**
